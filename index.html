@@ -87,6 +87,11 @@ main{max-width:1180px;padding:24px 28px 100px}
 .fab{right:28px}
 .bal .big{font-size:44px}
 }
+@media (min-width:600px){
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.charts .donut{flex-direction:column}
+.charts .donut svg{width:140px;height:140px}
+}
 .save{width:100%;border:0;border-radius:12px;padding:13px;background:var(--acc);color:var(--accink);font:700 16px inherit;font-family:inherit;cursor:pointer}
 </style>
 </head>
@@ -101,8 +106,8 @@ main{max-width:1180px;padding:24px 28px 100px}
 <div class="bal"><small>คงเหลือ</small><div class="big" id="bal"></div>
 <div class="row2"><div><small>รายรับ</small><b class="inc" id="inc"></b></div><div><small>รายจ่าย</small><b class="exp" id="exp"></b></div></div></div>
 <h2>งบประมาณ <span id="budm"></span><button class="lnk" id="setb">ตั้งงบ</button></h2><div id="bud"></div>
-<h2>รายรับมาจากไหน</h2><div id="icats"></div>
-<h2>รายจ่ายแยกหมวด</h2><div id="cats"></div>
+<div class="charts"><div><h2>รายรับมาจากไหน</h2><div id="icats"></div></div>
+<div><h2>รายจ่ายแยกหมวด</h2><div id="cats"></div></div></div>
 </section>
 <section class="c2"><h2>รายการ</h2><div id="list"></div></section></div>
 </main>

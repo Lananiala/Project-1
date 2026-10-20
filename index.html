@@ -70,21 +70,36 @@ input,select{width:100%;margin-bottom:10px;padding:11px;border:1px solid var(--l
 .bd.o .t b{color:var(--exp)}
 .bd small{color:var(--mute)}
 .bl{display:block;font-size:13px;color:var(--mute);margin:2px 0 4px}
+.c2 h2{margin-top:0}
+@media (min-width:900px){
+main{max-width:1180px;padding:24px 28px 100px}
+.top{display:grid;grid-template-columns:320px 280px 1fr;gap:16px;align-items:center;margin-bottom:18px}
+.top .nav{margin:0;gap:14px;justify-content:flex-end;order:3}
+.top .jump{margin:0;order:2}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.c2{position:sticky;top:16px}
+#list{max-height:calc(100vh - 150px);overflow:auto;padding-right:6px}
+.fab{right:28px}
+.bal .big{font-size:44px}
+}
 .save{width:100%;border:0;border-radius:12px;padding:13px;background:var(--acc);color:var(--accink);font:700 16px inherit;font-family:inherit;cursor:pointer}
 </style>
 </head>
 <body>
 <main>
 <h1>สมุดรายวัน</h1>
-<div class="tabs" id="tabs"></div>
+<div class="top"><div class="tabs" id="tabs"></div>
 <div class="nav"><button id="prev" aria-label="ก่อนหน้า">‹</button><span id="label"></span><button id="next" aria-label="ถัดไป">›</button></div>
 <div class="jump"><input type="date" id="jump" aria-label="เลือกวันที่"><button id="today">วันนี้</button></div>
+</div>
+<div class="cols"><section class="c1">
 <div class="bal"><small>คงเหลือ</small><div class="big" id="bal"></div>
 <div class="row2"><div><small>รายรับ</small><b class="inc" id="inc"></b></div><div><small>รายจ่าย</small><b class="exp" id="exp"></b></div></div></div>
 <h2>งบประมาณ <span id="budm"></span><button class="lnk" id="setb">ตั้งงบ</button></h2><div id="bud"></div>
 <h2>รายรับมาจากไหน</h2><div id="icats"></div>
 <h2>รายจ่ายแยกหมวด</h2><div id="cats"></div>
-<h2>รายการ</h2><div id="list"></div>
+</section>
+<section class="c2"><h2>รายการ</h2><div id="list"></div></section></div>
 </main>
 <button class="fab" id="add">+ เพิ่มรายการ</button>
 <dialog id="dlg">

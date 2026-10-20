@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>สมุดรายวัน – จดรายรับรายจ่าย</title>
+<meta name="description" content="สมุดรายวันออนไลน์ จดรายรับรายจ่าย ดูสรุปรายวัน สัปดาห์ เดือน ปี พร้อมกราฟวงกลมและตั้งงบประมาณได้ ใช้ได้ทั้งมือถือและคอมพิวเตอร์">
+<meta property="og:title" content="สมุดรายวัน">
+<meta property="og:description" content="จดรายรับรายจ่าย ดูสรุปรายวัน สัปดาห์ เดือน ปี และตั้งงบประมาณได้">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📒%3C/text%3E%3C/svg%3E">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6f4;--card:#fff;--ink:#14231c;--mute:#6b7c73;--line:#dfe7e2;--inc:#0f8a5f;--exp:#d6453d;--acc:#14231c;--accink:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1612;--card:#17221c;--ink:#e8f1ec;--mute:#8ea298;--line:#26352d;--inc:#3fd29a;--exp:#ff7b72;--acc:#e8f1ec;--accink:#0e1612}}
+:root[data-theme="dark"]{--bg:#0e1612;--card:#17221c;--ink:#e8f1ec;--mute:#8ea298;--line:#26352d;--inc:#3fd29a;--exp:#ff7b72;--acc:#e8f1ec;--accink:#0e1612}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Thai",system-ui,sans-serif;line-height:1.5}
+main{max-width:520px;margin:0 auto;padding:16px 16px 96px}
+h1{font-size:20px;font-weight:800;margin:4px 0 14px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px}
+.tabs button{border:0;background:none;color:var(--mute);font:600 14px inherit;font-family:inherit;padding:8px;border-radius:9px;cursor:pointer}
+.tabs button.on{background:var(--acc);color:var(--accink)}
+.nav{display:flex;align-items:center;justify-content:space-between;margin:14px 0}
+.nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);width:38px;height:38px;border-radius:10px;font-size:18px;cursor:pointer}
+.nav span{font-weight:600}
+.bal{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.bal small{color:var(--mute)}
+.bal .big{font-size:36px;font-weight:800;letter-spacing:-.5px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.row2 div{border-radius:12px;padding:10px 12px;border:1px solid var(--line)}
+.row2 b{display:block;font-size:18px}
+.inc{color:var(--inc)}.exp{color:var(--exp)}
+h2{font-size:15px;margin:22px 0 8px}
+.bar{display:grid;grid-template-columns:90px 1fr auto;gap:8px;align-items:center;font-size:13px;margin:6px 0}
+.bar i{display:block;height:8px;border-radius:4px;background:var(--exp)}
+.item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.item small{color:var(--mute);display:block}
+.item button{border:0;background:none;color:var(--mute);cursor:pointer;font-size:16px}
+.empty{color:var(--mute);padding:16px 0}
+.fab{position:fixed;right:max(16px,calc(50% - 244px));bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--acc);color:var(--accink);border:0;border-radius:28px;padding:14px 22px;font:700 16px inherit;font-family:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+dialog{border:0;border-radius:18px;padding:18px;width:min(92vw,400px);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.seg button{border:1px solid var(--line);background:none;color:var(--ink);padding:10px;border-radius:10px;font:600 15px inherit;font-family:inherit;cursor:pointer}
+.seg button.on.i{background:var(--inc);color:#fff;border-color:var(--inc)}
+.seg button.on.e{background:var(--exp);color:#fff;border-color:var(--exp)}
+input,select{width:100%;margin-bottom:10px;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:16px inherit;font-family:inherit}
+#amt{font-size:28px;font-weight:800}
+.donut{display:flex;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.donut svg{width:150px;height:150px;flex:none}
+.legend{flex:1;min-width:0;width:100%}
+.lg{display:grid;grid-template-columns:10px 1fr auto auto;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+.lg i{width:10px;height:10px;border-radius:50%}
+@media (max-width:420px){.donut{flex-direction:column}}
+.jump{display:flex;gap:8px;margin-bottom:14px}
+.jump input{margin:0;flex:1}
+.jump button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:0 14px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.lnk{border:0;background:none;color:var(--inc);font:600 13px inherit;font-family:inherit;cursor:pointer;margin-left:6px}
+.bud{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 14px}
+.bd{margin:10px 0;font-size:13px}
+.bd .t{display:flex;justify-content:space-between}
+.bd .tr{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin:4px 0}
+.bd .tr i{display:block;height:100%;border-radius:4px;background:var(--inc)}
+.bd.w .tr i{background:#e0a100}
+.bd.o .tr i{background:var(--exp)}
+.bd.o .t b{color:var(--exp)}
+.bd small{color:var(--mute)}
+.bl{display:block;font-size:13px;color:var(--mute);margin:2px 0 4px}
+.save{width:100%;border:0;border-radius:12px;padding:13px;background:var(--acc);color:var(--accink);font:700 16px inherit;font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+<h1>สมุดรายวัน</h1>
+<div class="tabs" id="tabs"></div>
+<div class="nav"><button id="prev" aria-label="ก่อนหน้า">‹</button><span id="label"></span><button id="next" aria-label="ถัดไป">›</button></div>
+<div class="jump"><input type="date" id="jump" aria-label="เลือกวันที่"><button id="today">วันนี้</button></div>
+<div class="bal"><small>คงเหลือ</small><div class="big" id="bal"></div>
+<div class="row2"><div><small>รายรับ</small><b class="inc" id="inc"></b></div><div><small>รายจ่าย</small><b class="exp" id="exp"></b></div></div></div>
+<h2>งบประมาณ <span id="budm"></span><button class="lnk" id="setb">ตั้งงบ</button></h2><div id="bud"></div>
+<h2>รายรับมาจากไหน</h2><div id="icats"></div>
+<h2>รายจ่ายแยกหมวด</h2><div id="cats"></div>
+<h2>รายการ</h2><div id="list"></div>
+</main>
+<button class="fab" id="add">+ เพิ่มรายการ</button>
+<dialog id="dlg">
+<div class="seg"><button class="e on" data-t="e">รายจ่าย</button><button class="i" data-t="i">รายรับ</button></div>
+<input id="amt" type="number" inputmode="decimal" placeholder="0" min="0">
+<select id="cat"></select>
+<input id="note" placeholder="โน้ต (ไม่ใส่ก็ได้)">
+<input id="date" type="date">
+<button class="save" id="save">บันทึก</button>
+</dialog>
+<dialog id="bdlg"><h2 style="margin-top:0">งบประมาณรายเดือน</h2><p class="bl">เว้นว่างไว้ถ้าไม่ต้องการตั้ง ค่าอื่น ๆ รวมทุกหมวดที่ไม่ใช่อาหาร เดินทาง อุปกรณ์</p><div id="bform"></div><button class="save" id="bsave">บันทึกงบ</button></dialog>
+<script>
+var CATS={e:["อาหาร","เดินทาง","อุปกรณ์","ที่พัก","ช้อปปิ้ง","บิล/ค่าบริการ","สุขภาพ","อื่น ๆ"],i:["เงินรายวัน","เงินรายสัปดาห์","เงินเดือน","ขายของ","งานเสริม","อื่น ๆ"]};
+var KEY="smud-raiwan-v1",data=[],mode="month",anchor=new Date(),type="e";
+try{data=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){data=[]}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+var $=function(id){return document.getElementById(id)};
+var fmt=function(n){return n.toLocaleString("th-TH",{maximumFractionDigits:2})};
+function iso(d){var z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)}
+function range(){var a=new Date(anchor),s,e;a.setHours(0,0,0,0);
+if(mode==="day"){s=new Date(a);e=new Date(a)}
+else if(mode==="week"){var w=(a.getDay()+6)%7;s=new Date(a);s.setDate(a.getDate()-w);e=new Date(s);e.setDate(s.getDate()+6)}
+else if(mode==="month"){s=new Date(a.getFullYear(),a.getMonth(),1);e=new Date(a.getFullYear(),a.getMonth()+1,0)}
+else{s=new Date(a.getFullYear(),0,1);e=new Date(a.getFullYear(),11,31)}
+return[s,e]}
+function lab(s,e){var o={day:"numeric",month:"short",year:"numeric"};
+if(mode==="day")return s.toLocaleDateString("th-TH",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+if(mode==="week")return s.toLocaleDateString("th-TH",{day:"numeric",month:"short"})+" – "+e.toLocaleDateString("th-TH",o);
+if(mode==="month")return s.toLocaleDateString("th-TH",{month:"long",year:"numeric"});
+return "ปี "+s.toLocaleDateString("th-TH",{year:"numeric"})}
+function render(){
+var r=range(),s=iso(r[0]),e=iso(r[1]);
+$("label").textContent=lab(r[0],r[1]);$("jump").value=iso(anchor);renderBud();
+var rows=data.filter(function(x){return x.d>=s&&x.d<=e}).sort(function(a,b){return b.d.localeCompare(a.d)||b.id-a.id});
+var inc=0,exp=0,by={},iby={};
+rows.forEach(function(x){if(x.t==="i"){inc+=x.a;iby[x.c]=(iby[x.c]||0)+x.a}else{exp+=x.a;by[x.c]=(by[x.c]||0)+x.a}});
+$("inc").textContent="+"+fmt(inc);$("exp").textContent="−"+fmt(exp);
+var b=inc-exp;$("bal").textContent=(b<0?"−":"")+"฿"+fmt(Math.abs(b));
+$("bal").className="big "+(b<0?"exp":"inc");
+var ks=Object.keys(by).sort(function(a,b){return by[b]-by[a]});
+$("cats").innerHTML=donut(ks,by,exp,"รวมจ่าย","ยังไม่มีรายจ่าย",COL);
+var iks=Object.keys(iby).sort(function(a,b){return iby[b]-iby[a]});
+$("icats").innerHTML=donut(iks,iby,inc,"รวมรับ","ยังไม่มีรายรับ",ICOL);
+$("list").innerHTML=rows.length?rows.map(function(x){
+var d=new Date(x.d+"T00:00:00").toLocaleDateString("th-TH",{day:"numeric",month:"short"});
+return'<div class="item"><div>'+x.c+'<small>'+d+(x.n?" · "+x.n.replace(/</g,"&lt;"):"")+'</small></div><div><b class="'+(x.t==="i"?"inc":"exp")+'">'+(x.t==="i"?"+":"−")+fmt(x.a)+'</b> <button data-del="'+x.id+'" aria-label="ลบ">✕</button></div></div>'}).join(""):'<div class="empty">ยังไม่มีรายการ กด “เพิ่มรายการ” เพื่อเริ่มจด</div>';
+document.querySelectorAll("#tabs button").forEach(function(t){t.classList.toggle("on",t.dataset.m===mode)})}
+$("tabs").innerHTML=[["day","วัน"],["week","สัปดาห์"],["month","เดือน"],["year","ปี"]].map(function(m){return'<button data-m="'+m[0]+'">'+m[1]+'</button>'}).join("");
+$("tabs").onclick=function(ev){var m=ev.target.dataset.m;if(m){mode=m;render()}};
+function shift(n){var a=new Date(anchor);
+if(mode==="day")a.setDate(a.getDate()+n);else if(mode==="week")a.setDate(a.getDate()+7*n);
+else if(mode==="month")a.setMonth(a.getMonth()+n,1);else a.setFullYear(a.getFullYear()+n,0,1);
+anchor=a;render()}
+$("prev").onclick=function(){shift(-1)};$("next").onclick=function(){shift(1)};
+$("list").onclick=function(ev){var id=ev.target.dataset.del;if(id&&confirm("ลบรายการนี้?")){data=data.filter(function(x){return String(x.id)!==id});persist();render()}};
+function setType(t){type=t;document.querySelectorAll(".seg button").forEach(function(b){b.classList.toggle("on",b.dataset.t===t)});
+$("cat").innerHTML=CATS[t].map(function(c){return"<option>"+c+"</option>"}).join("")}
+document.querySelector(".seg").onclick=function(ev){if(ev.target.dataset.t)setType(ev.target.dataset.t)};
+$("add").onclick=function(){setType("e");$("amt").value="";$("note").value="";$("date").value=iso(new Date());$("dlg").showModal();$("amt").focus()};
+$("dlg").onclick=function(ev){if(ev.target===$("dlg"))$("dlg").close()};
+$("save").onclick=function(){var a=parseFloat($("amt").value);if(!(a>0)){$("amt").focus();return}
+data.push({id:Date.now(),t:type,a:a,c:$("cat").value,n:$("note").value.trim(),d:$("date").value||iso(new Date())});
+persist();anchor=new Date($("date").value+"T00:00:00");$("dlg").close();render()};
+$("jump").onchange=function(){if($("jump").value){anchor=new Date($("jump").value+"T00:00:00");render()}};
+$("today").onclick=function(){anchor=new Date();render()};
+var ICOL=["#0f8a5f","#3b7ddd","#e0a100","#8e5bd6","#2aa6b8","#6b7c73"];
+var BG=["อาหาร","เดินทาง","อุปกรณ์","อื่น ๆ"],bkey="smud-raiwan-budget-v1",budget={};
+try{budget=JSON.parse(localStorage.getItem(bkey)||"{}")}catch(e){budget={}}
+function grp(c){return c==="อาหาร"||c==="เดินทาง"||c==="อุปกรณ์"?c:"อื่น ๆ"}
+function renderBud(){
+var a=new Date(anchor),m0=new Date(a.getFullYear(),a.getMonth(),1),s=iso(m0),en=iso(new Date(a.getFullYear(),a.getMonth()+1,0));
+$("budm").textContent=m0.toLocaleDateString("th-TH",{month:"long",year:"numeric"});
+var sp={};data.forEach(function(x){if(x.t==="e"&&x.d>=s&&x.d<=en){var g=grp(x.c);sp[g]=(sp[g]||0)+x.a}});
+var h="";BG.forEach(function(g){var b=budget[g];if(!(b>0))return;var u=sp[g]||0,p=u/b*100,cl=p>100?"o":p>=80?"w":"";
+h+='<div class="bd '+cl+'"><div class="t"><span>ค่า'+g+'</span><b>'+fmt(u)+' / '+fmt(b)+'</b></div><div class="tr"><i style="width:'+Math.min(100,p)+'%"></i></div><small>'+(p>100?'เกินงบ '+fmt(u-b):'เหลือ '+fmt(b-u))+'</small></div>'});
+$("bud").innerHTML=h?'<div class="bud">'+h+'</div>':'<div class="empty">ยังไม่ได้ตั้งงบ กด “ตั้งงบ” ถ้าต้องการ (ไม่ตั้งก็ได้)</div>'}
+$("setb").onclick=function(){$("bform").innerHTML=BG.map(function(g,i){return'<label class="bl" for="bg'+i+'">ค่า'+g+' (บาท/เดือน)</label><input id="bg'+i+'" type="number" inputmode="decimal" min="0" placeholder="ไม่ตั้ง" value="'+(budget[g]||"")+'">'}).join("");$("bdlg").showModal()};
+$("bdlg").onclick=function(ev){if(ev.target===$("bdlg"))$("bdlg").close()};
+$("bsave").onclick=function(){BG.forEach(function(g,i){var v=parseFloat($("bg"+i).value);if(v>0)budget[g]=v;else delete budget[g]});try{localStorage.setItem(bkey,JSON.stringify(budget))}catch(e){}$("bdlg").close();render()};
+var COL=["#0f8a5f","#d6453d","#e0a100","#3b7ddd","#8e5bd6","#e07b39","#2aa6b8","#6b7c73"];
+function donut(ks,by,tot,lbl,emp,pal){
+if(!ks.length)return'<div class="empty">'+emp+'</div>';
+var off=25,seg="",leg="";
+ks.forEach(function(k,i){var p=by[k]/tot*100,c=pal[i%pal.length];
+seg+='<circle cx="21" cy="21" r="15.9155" fill="none" stroke="'+c+'" stroke-width="6" stroke-dasharray="'+p+' '+(100-p)+'" stroke-dashoffset="'+off+'"/>';
+off-=p;
+leg+='<div class="lg"><i style="background:'+c+'"></i><span>'+k+'</span><span>'+p.toFixed(0)+'%</span><b>'+fmt(by[k])+'</b></div>'});
+return'<div class="donut"><svg viewBox="0 0 42 42" role="img" aria-label="กราฟวงกลมแยกหมวด">'+seg+'<text x="21" y="20" text-anchor="middle" font-size="3.2" fill="var(--mute)">'+lbl+'</text><text x="21" y="25" text-anchor="middle" font-size="4" font-weight="800" fill="var(--ink)">'+fmt(tot)+'</text></svg><div class="legend">'+leg+'</div></div>'}
+render();
+</script>
+</body>
+</html>

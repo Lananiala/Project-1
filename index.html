@@ -57,7 +57,12 @@ input,select{width:100%;margin-bottom:10px;padding:11px;border:1px solid var(--l
 .lg i{width:10px;height:10px;border-radius:50%}
 @media (max-width:420px){.donut{flex-direction:column}}
 .jump{display:flex;gap:8px;margin-bottom:14px}
-.jump input{margin:0;flex:1}
+.jump select{margin:0;width:auto;flex:1;min-width:0;padding:10px 6px}
+#jm{flex:2}
+.dsel{display:grid;grid-template-columns:1fr 2fr 1.4fr;gap:6px}
+.dsel select{margin-bottom:10px;padding:11px 6px}
+.chips{display:flex;gap:6px;margin-bottom:8px}
+.chips button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:20px;padding:6px 12px;font:600 13px inherit;font-family:inherit;cursor:pointer}
 .jump button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:0 14px;font:600 14px inherit;font-family:inherit;cursor:pointer}
 .lnk{border:0;background:none;color:var(--inc);font:600 13px inherit;font-family:inherit;cursor:pointer;margin-left:6px}
 .bud{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 14px}
@@ -73,7 +78,7 @@ input,select{width:100%;margin-bottom:10px;padding:11px;border:1px solid var(--l
 .c2 h2{margin-top:0}
 @media (min-width:900px){
 main{max-width:1180px;padding:24px 28px 100px}
-.top{display:grid;grid-template-columns:320px 280px 1fr;gap:16px;align-items:center;margin-bottom:18px}
+.top{display:grid;grid-template-columns:320px 400px 1fr;gap:16px;align-items:center;margin-bottom:18px}
 .top .nav{margin:0;gap:14px;justify-content:flex-end;order:3}
 .top .jump{margin:0;order:2}
 .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
@@ -90,7 +95,7 @@ main{max-width:1180px;padding:24px 28px 100px}
 <h1>สมุดรายวัน</h1>
 <div class="top"><div class="tabs" id="tabs"></div>
 <div class="nav"><button id="prev" aria-label="ก่อนหน้า">‹</button><span id="label"></span><button id="next" aria-label="ถัดไป">›</button></div>
-<div class="jump"><input type="date" id="jump" aria-label="เลือกวันที่"><button id="today">วันนี้</button></div>
+<div class="jump"><select id="jd" aria-label="วัน"></select><select id="jm" aria-label="เดือน"></select><select id="jy" aria-label="ปี"></select><button id="today">วันนี้</button></div>
 </div>
 <div class="cols"><section class="c1">
 <div class="bal"><small>คงเหลือ</small><div class="big" id="bal"></div>
@@ -107,7 +112,9 @@ main{max-width:1180px;padding:24px 28px 100px}
 <input id="amt" type="number" inputmode="decimal" placeholder="0" min="0">
 <select id="cat"></select>
 <input id="note" placeholder="โน้ต (ไม่ใส่ก็ได้)">
-<input id="date" type="date">
+<label class="bl">วันที่</label>
+<div class="chips"><button type="button" id="cT">วันนี้</button><button type="button" id="cY">เมื่อวาน</button></div>
+<div class="dsel"><select id="dd" aria-label="วัน"></select><select id="dm" aria-label="เดือน"></select><select id="dy" aria-label="ปี"></select></div>
 <button class="save" id="save">บันทึก</button>
 </dialog>
 <dialog id="bdlg"><h2 style="margin-top:0">งบประมาณรายเดือน</h2><p class="bl">เว้นว่างไว้ถ้าไม่ต้องการตั้ง ค่าอื่น ๆ รวมทุกหมวดที่ไม่ใช่อาหาร เดินทาง อุปกรณ์</p><div id="bform"></div><button class="save" id="bsave">บันทึกงบ</button></dialog>
@@ -132,7 +139,7 @@ if(mode==="month")return s.toLocaleDateString("th-TH",{month:"long",year:"numeri
 return "ปี "+s.toLocaleDateString("th-TH",{year:"numeric"})}
 function render(){
 var r=range(),s=iso(r[0]),e=iso(r[1]);
-$("label").textContent=lab(r[0],r[1]);$("jump").value=iso(anchor);renderBud();
+$("label").textContent=lab(r[0],r[1]);setDate("j",anchor);renderBud();
 var rows=data.filter(function(x){return x.d>=s&&x.d<=e}).sort(function(a,b){return b.d.localeCompare(a.d)||b.id-a.id});
 var inc=0,exp=0,by={},iby={};
 rows.forEach(function(x){if(x.t==="i"){inc+=x.a;iby[x.c]=(iby[x.c]||0)+x.a}else{exp+=x.a;by[x.c]=(by[x.c]||0)+x.a}});
@@ -158,12 +165,22 @@ $("list").onclick=function(ev){var id=ev.target.dataset.del;if(id&&confirm("ล�
 function setType(t){type=t;document.querySelectorAll(".seg button").forEach(function(b){b.classList.toggle("on",b.dataset.t===t)});
 $("cat").innerHTML=CATS[t].map(function(c){return"<option>"+c+"</option>"}).join("")}
 document.querySelector(".seg").onclick=function(ev){if(ev.target.dataset.t)setType(ev.target.dataset.t)};
-$("add").onclick=function(){setType("e");$("amt").value="";$("note").value="";$("date").value=iso(new Date());$("dlg").showModal();$("amt").focus()};
+$("add").onclick=function(){setType("e");$("amt").value="";$("note").value="";setDate("d",new Date());$("dlg").showModal();$("amt").focus()};
 $("dlg").onclick=function(ev){if(ev.target===$("dlg"))$("dlg").close()};
 $("save").onclick=function(){var a=parseFloat($("amt").value);if(!(a>0)){$("amt").focus();return}
-data.push({id:Date.now(),t:type,a:a,c:$("cat").value,n:$("note").value.trim(),d:$("date").value||iso(new Date())});
-persist();anchor=new Date($("date").value+"T00:00:00");$("dlg").close();render()};
-$("jump").onchange=function(){if($("jump").value){anchor=new Date($("jump").value+"T00:00:00");render()}};
+data.push({id:Date.now(),t:type,a:a,c:$("cat").value,n:$("note").value.trim(),d:iso(readDate("d"))});
+persist();anchor=readDate("d");$("dlg").close();render()};
+var TM=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+function fillDate(p){var y0=new Date().getFullYear(),h="",i;
+for(i=1;i<=31;i++)h+='<option value="'+i+'">'+i+'</option>';$(p+"d").innerHTML=h;
+h="";for(i=0;i<12;i++)h+='<option value="'+i+'">'+TM[i]+'</option>';$(p+"m").innerHTML=h;
+h="";for(i=y0+5;i>=y0-30;i--)h+='<option value="'+i+'">'+(i+543)+'</option>';$(p+"y").innerHTML=h}
+function setDate(p,d){$(p+"d").value=d.getDate();$(p+"m").value=d.getMonth();$(p+"y").value=d.getFullYear()}
+function readDate(p){var y=+$(p+"y").value,m=+$(p+"m").value,d=+$(p+"d").value,mx=new Date(y,m+1,0).getDate();return new Date(y,m,Math.min(d,mx))}
+fillDate("j");fillDate("d");
+["jd","jm","jy"].forEach(function(id){$(id).onchange=function(){anchor=readDate("j");render()}});
+$("cT").onclick=function(){setDate("d",new Date())};
+$("cY").onclick=function(){var y=new Date();y.setDate(y.getDate()-1);setDate("d",y)};
 $("today").onclick=function(){anchor=new Date();render()};
 var ICOL=["#0f8a5f","#3b7ddd","#e0a100","#8e5bd6","#2aa6b8","#6b7c73"];
 var BG=["อาหาร","เดินทาง","อุปกรณ์","อื่น ๆ"],bkey="smud-raiwan-budget-v1",budget={};

@@ -92,6 +92,7 @@ main{max-width:1180px;padding:24px 28px 100px}
 .charts .donut{flex-direction:column}
 .charts .donut svg{width:140px;height:140px}
 }
+.bal #carry{display:block;margin-top:2px}
 .save{width:100%;border:0;border-radius:12px;padding:13px;background:var(--acc);color:var(--accink);font:700 16px inherit;font-family:inherit;cursor:pointer}
 </style>
 </head>
@@ -103,7 +104,7 @@ main{max-width:1180px;padding:24px 28px 100px}
 <div class="jump"><select id="jd" aria-label="วัน"></select><select id="jm" aria-label="เดือน"></select><select id="jy" aria-label="ปี"></select><button id="today">วันนี้</button></div>
 </div>
 <div class="cols"><section class="c1">
-<div class="bal"><small>คงเหลือ</small><div class="big" id="bal"></div>
+<div class="bal"><small>คงเหลือ</small><div class="big" id="bal"></div><small id="carry"></small>
 <div class="row2"><div><small>รายรับ</small><b class="inc" id="inc"></b></div><div><small>รายจ่าย</small><b class="exp" id="exp"></b></div></div></div>
 <h2>งบประมาณ <span id="budm"></span><button class="lnk" id="setb">ตั้งงบ</button></h2><div id="bud"></div>
 <div class="charts"><div><h2>รายรับมาจากไหน</h2><div id="icats"></div></div>
@@ -113,7 +114,7 @@ main{max-width:1180px;padding:24px 28px 100px}
 </main>
 <button class="fab" id="add">+ เพิ่มรายการ</button>
 <dialog id="dlg">
-<div class="seg"><button class="e on" data-t="e">รายจ่าย</button><button class="i" data-t="i">รายรับ</button></div>
+<div class="seg"><button class="i on" data-t="i">รายรับ</button><button class="e" data-t="e">รายจ่าย</button></div>
 <input id="amt" type="number" inputmode="decimal" placeholder="0" min="0">
 <select id="cat"></select>
 <input id="note" placeholder="โน้ต (ไม่ใส่ก็ได้)">
@@ -151,6 +152,8 @@ rows.forEach(function(x){if(x.t==="i"){inc+=x.a;iby[x.c]=(iby[x.c]||0)+x.a}else{
 $("inc").textContent="+"+fmt(inc);$("exp").textContent="−"+fmt(exp);
 var b=inc-exp;$("bal").textContent=(b<0?"−":"")+"฿"+fmt(Math.abs(b));
 $("bal").className="big "+(b<0?"exp":"inc");
+var cy=0;data.forEach(function(x){if(x.d<s)cy+=x.t==="i"?x.a:-x.a});
+$("carry").textContent="ยกมา "+(cy<0?"−":"")+"฿"+fmt(Math.abs(cy));
 var ks=Object.keys(by).sort(function(a,b){return by[b]-by[a]});
 $("cats").innerHTML=donut(ks,by,exp,"รวมจ่าย","ยังไม่มีรายจ่าย",COL);
 var iks=Object.keys(iby).sort(function(a,b){return iby[b]-iby[a]});
@@ -170,7 +173,7 @@ $("list").onclick=function(ev){var id=ev.target.dataset.del;if(id&&confirm("ล�
 function setType(t){type=t;document.querySelectorAll(".seg button").forEach(function(b){b.classList.toggle("on",b.dataset.t===t)});
 $("cat").innerHTML=CATS[t].map(function(c){return"<option>"+c+"</option>"}).join("")}
 document.querySelector(".seg").onclick=function(ev){if(ev.target.dataset.t)setType(ev.target.dataset.t)};
-$("add").onclick=function(){setType("e");$("amt").value="";$("note").value="";setDate("d",new Date());$("dlg").showModal();$("amt").focus()};
+$("add").onclick=function(){setType("i");$("amt").value="";$("note").value="";setDate("d",new Date());$("dlg").showModal();$("amt").focus()};
 $("dlg").onclick=function(ev){if(ev.target===$("dlg"))$("dlg").close()};
 $("save").onclick=function(){var a=parseFloat($("amt").value);if(!(a>0)){$("amt").focus();return}
 data.push({id:Date.now(),t:type,a:a,c:$("cat").value,n:$("note").value.trim(),d:iso(readDate("d"))});
